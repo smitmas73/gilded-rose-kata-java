@@ -3,13 +3,17 @@ package com.gildedrose;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static com.gildedrose.GildedRoseUtil.whereItemCloseToExpiration;
+import static com.gildedrose.GildedRoseUtil.whereItemHasExpired;
+import static com.gildedrose.GildedRoseUtil.whereItemHasNotSpoiled;
+import static com.gildedrose.GildedRoseUtil.whereItemIsBackstagePasses;
+import static com.gildedrose.GildedRoseUtil.whereItemIsCheese;
+import static com.gildedrose.GildedRoseUtil.whereItemIsConjured;
+import static com.gildedrose.GildedRoseUtil.whereItemVeryCloseToExpiration;
+
 class GildedRose {
     Item[] items;
 
-    private static final String CHEESE_ITEM_INDICATOR = "Aged Brie";
-    private static final String BACKSTAGE_PASSES_ITEM_INDICATOR = "Backstage passes";
-    private static final String LEGENDARY_ITEM_INDICATOR = "Sulfuras";
-    private static final String CONJURED_ITEM_INDICATOR = "Conjured";
     private static final Integer MAXIMUM_ITEM_QUALITY = 50;
     private static final Integer MINIMUM_ITEM_QUALITY = 0;
 
@@ -20,7 +24,7 @@ class GildedRose {
     public void updateQuality() {
         Arrays.stream(items)
                 .filter(Objects::nonNull)
-                .filter(this::whereItemIsNotLegendary)
+                .filter(GildedRoseUtil::whereItemIsNotLegendary)
                 .forEach(item -> {
                     handleItemQuality(item);
                     handleSellIn(item);
@@ -86,38 +90,6 @@ class GildedRose {
         if (whereItemHasNotSpoiled(item)) {
             depreciateItemQuality(item, 1);
         }
-    }
-
-    private boolean whereItemIsCheese(Item item) {
-        return item.name.contains(CHEESE_ITEM_INDICATOR);
-    }
-
-    private boolean whereItemIsBackstagePasses(Item item) {
-        return item.name.contains(BACKSTAGE_PASSES_ITEM_INDICATOR);
-    }
-
-    private boolean whereItemIsNotLegendary(Item item) {
-        return !item.name.contains(LEGENDARY_ITEM_INDICATOR);
-    }
-
-    private boolean whereItemIsConjured(Item item) {
-        return item.name.contains(CONJURED_ITEM_INDICATOR);
-    }
-
-    private boolean whereItemHasNotSpoiled(Item item) {
-        return item.quality > 0;
-    }
-
-    private boolean whereItemCloseToExpiration(Item item) {
-        return item.sellIn < 11;
-    }
-
-    private boolean whereItemVeryCloseToExpiration(Item item) {
-        return item.sellIn < 6;
-    }
-
-    private boolean whereItemHasExpired(Item item) {
-        return item.sellIn < 0;
     }
 
     private void depreciateItemQuality(Item item, Integer depreciationValue) {
